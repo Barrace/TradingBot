@@ -13,17 +13,17 @@ class TradingLogic {
             val candle = Candle(bitcoinPrice, bitcoinPrice, bitcoinPrice, bitcoinPrice, false)
 
             val haCandle = heikinAshiCalculator.calculateHeikinAshiCandle(candle)
-            println("Heikin-Ashi Candle - Open: ${haCandle.open}, High: ${haCandle.high}, Low: ${haCandle.low}, Close: ${haCandle.close}")
+            log("Heikin-Ashi Candle - Open: ${haCandle.open}, High: ${haCandle.high}, Low: ${haCandle.low}, Close: ${haCandle.close}")
 
             val buyingPower = Globals.buyingPower
             val sellingPower = Globals.sellingPower
             val wasGreen = Globals.wasGreen
 
             if(wasGreen && !haCandle.isGreen)
-                println("Switched from Green to Red")
+                log("Switched from Green to Red")
 
             if(!wasGreen && haCandle.isGreen)
-                println("Switched from Red to Green")
+                log("Switched from Red to Green")
 
             //BUY
             if (haCandle.close > haCandle.open && buyingPower > 0 && !wasGreen) {
@@ -38,13 +38,41 @@ class TradingLogic {
             Globals.wasGreen = haCandle.isGreen
 
         } else {
-            println("Failed to retrieve Bitcoin price.")
+            log("Failed to retrieve Bitcoin price.")
         }
+    }
+
+    fun executeTradingLoop() {
+        var keepRunning = true
+        val tradingLogic = TradingLogic()
+
+        while (keepRunning) {
+
+            tradingLogic.process()
+
+            // Run as often as user selected.
+            // Day Trade (Not recommended) = hr = 3600
+            // Less than a year = day = 86400
+            // Years (Safest) = week = 604800
+            for (i in 1..Globals.fireRate) {
+                if (System.`in`.available() > 0) {
+                    readlnOrNull()
+                    keepRunning = false
+                    break
+                }
+                Thread.sleep(1000) // Sleep for 1 second
+            }
+        }
+    }
+
+    private fun log(str : String) {
+        println(str)
+        LogManager.addLog(str)
     }
 
     private fun executeBuy(price: Double, buyingPower: Double) {
         val buyAmountInBtc = buyingPower / price
-        println("\n \n BOUGHT $buyAmountInBtc at $price \n " +
+        log("\n \n BOUGHT $buyAmountInBtc at $price \n " +
                 "Total Portfolio Value: $buyingPower \n" +
                 "${getCurrentDateTime()} \n \n")
 
@@ -53,7 +81,7 @@ class TradingLogic {
     }
     private fun executeSell(price: Double, sellingPower: Double) {
         val sellAmountInUsd = sellingPower * price
-        println("\n \n SOLD $sellingPower at $price \n " +
+        log("\n \n SOLD $sellingPower at $price \n " +
                 "Total Portfolio Value: $sellAmountInUsd \n" +
                 "${getCurrentDateTime()} \n \n")
 

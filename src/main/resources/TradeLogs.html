@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Messages</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .log-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        pre {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            max-height: 400px;
+        }
+    </style>
+</head>
+<body>
+<div class="log-container">
+    <h1>Log Messages</h1>
+    <pre id="log-content">Connecting to log server...</pre>
+</div>
+<script>
+    const logContent = document.getElementById('log-content');
+    const socket = new WebSocket('ws://' + window.location.host + '/log-updates');
+
+    // Handle incoming messages from the WebSocket
+    socket.onmessage = function(event) {
+        logContent.textContent = event.data;
+    };
+
+    // Handle WebSocket connection errors
+    socket.onerror = function(event) {
+        logContent.textContent = 'Error connecting to log server.';
+    };
+
+    // Handle WebSocket connection close
+    socket.onclose = function(event) {
+        logContent.textContent += '\nConnection to log server closed.';
+    };
+</script>
+</body>
+</html>
