@@ -18,13 +18,16 @@ dependencies {
     testImplementation(kotlin("test"))
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation("com.squareup.okio:okio:3.0.0")
+
     implementation("org.json:json:20210307")
+
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-server-html-builder:$ktorVersion")
-//    implementation("io.ktor:ktor-server-routing:$ktorVersion")
-//    implementation("io.ktor:ktor-server-cio:$ktorVersion")
+
+    implementation("ch.qos.logback:logback-classic:1.2.10")
 }
 
 tasks.test {

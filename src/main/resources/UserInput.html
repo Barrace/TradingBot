@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Bot Input</title>
+    <style>
+        /* Apply a modern, professional font */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Style the form container */
+        .form-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        /* Style the labels and inputs */
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+            color: #555;
+        }
+
+        select, input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        /* Style the radio buttons group */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Adjust spacing for the USD allocated field */
+        .usd-allocated-container {
+            margin-top: 30px;
+        }
+
+        /* Style the small message */
+        .small-message {
+            color: red;
+            font-style: italic;
+            font-size: 0.9em;
+            margin-top: -10px;
+        }
+
+        /* Style the submit button */
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 25px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <h1>Trading Bot Input</h1>
+    <form action="/submit" method="post">
+        <!-- Provider Dropdown -->
+        <label for="provider">Provider:</label>
+        <select id="provider" name="provider">
+            <option value="Kraken">Kraken</option>
+            <option value="Coinbase">Coinbase</option>
+        </select>
+
+        <!-- Asset Dropdown -->
+        <label for="asset">Asset:</label>
+        <select id="asset" name="asset">
+            <option value="BTC">BTC</option>
+        </select>
+
+        <!-- Trade Length Radio Buttons -->
+        <label>Trade Length:</label>
+        <div class="radio-group">
+            <div class="radio-item">
+                <input type="radio" id="day-trade" name="tradeLength" value="Day Trade (Not recommended)">
+                <label for="day-trade">Day Trade (Not recommended)</label>
+            </div>
+            <div class="radio-item">
+                <input type="radio" id="less-than-year" name="tradeLength" value="Less than a year">
+                <label for="less-than-year">Less than a year</label>
+            </div>
+            <div class="radio-item">
+                <input type="radio" id="years" name="tradeLength" value="Years (Safest)" checked>
+                <label for="years">Years (Safest)</label>
+            </div>
+        </div>
+
+        <!-- USD Allocated Field -->
+        <div class="usd-allocated-container">
+            <label for="usdAllocated">USD allocated to TradingBot:</label>
+            <input type="number" id="usdAllocated" name="usdAllocated" min="10" max="100000" required>
+            <small class="small-message">Must have at least this amount available in account.</small>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+<script>
+    // Add validation messages for the USD allocated field
+    const usdAllocatedInput = document.getElementById('usdAllocated');
+    usdAllocatedInput.addEventListener('input', function () {
+        if (usdAllocatedInput.validity.rangeUnderflow) {
+            usdAllocatedInput.setCustomValidity('The minimum amount is $10.');
+        } else if (usdAllocatedInput.validity.rangeOverflow) {
+            usdAllocatedInput.setCustomValidity('The maximum amount is $100,000.');
+        } else {
+            usdAllocatedInput.setCustomValidity('');
+        }
+    });
+</script>
+</body>
+</html>

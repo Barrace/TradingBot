@@ -1,22 +1,32 @@
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
 import io.ktor.server.request.*
 
-fun main() {
-    embeddedServer(Netty, port = 8080) {
-        routing {
-            get("/") {
-                call.respondText("Hello, World!")
-            }
-
-            post("/submit") {
-                val parameters = call.receiveParameters()
-                val userInput = parameters["userInput"] ?: "No input provided"
-                call.respondText("Received input: $userInput")
-            }
+fun Application.module() {
+    routing {
+        // Serve the HTML file
+        get("/form") {
+            call.respondText(this::class.java.classLoader.getResource("UserInput.html")!!.readText(), contentType = io.ktor.http.ContentType.Text.Html)
         }
-    }.start(wait = true)
+
+        // Handle form submission
+        post("/submit") {
+            val parameters = call.receiveParameters()
+
+            // Retrieve form data
+            val provider = parameters["provider"] ?: "Unknown"
+            val asset = parameters["asset"] ?: "Unknown"
+            val tradeLength = parameters["tradeLength"] ?: "Unknown"
+            val usdAllocated = parameters["usdAllocated"] ?: "0"
+
+            // Process the form data (for demonstration, just returning the values)
+            call.respondText("""
+                Provider: $provider
+                Asset: $asset
+                Trade Length: $tradeLength
+                USD Allocated to TradingBot: $usdAllocated
+            """.trimIndent())
+        }
+    }
 }
