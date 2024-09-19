@@ -60,18 +60,18 @@ class TradingLogic {
 
     private fun executeBuy(price: Double, buyingPower: Double) {
         val buyAmountInBtc = buyingPower / price
-        log("\n \n    BOUGHT $buyAmountInBtc at $price \n " +
+        log("\n\n    BOUGHT $buyAmountInBtc at $price \n " +
                 "    Total Portfolio Value: $buyingPower \n" +
-                "    ${getCurrentDateTime()} \n \n")
+                "    ${getCurrentDateTime()} \n\n")
 
         Globals.buyingPower -= buyingPower
         Globals.sellingPower += buyAmountInBtc
     }
     private fun executeSell(price: Double, sellingPower: Double) {
         val sellAmountInUsd = sellingPower * price
-        log("\n \n SOLD $sellingPower at $price \n " +
+        log("\n\n SOLD $sellingPower at $price \n " +
                 "Total Portfolio Value: $sellAmountInUsd \n" +
-                "${getCurrentDateTime()} \n \n")
+                "${getCurrentDateTime()} \n\n")
 
         Globals.buyingPower += sellAmountInUsd
         Globals.sellingPower -= sellingPower

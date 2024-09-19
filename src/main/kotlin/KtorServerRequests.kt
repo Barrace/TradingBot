@@ -1,3 +1,4 @@
+import io.ktor.http.ContentType
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -18,11 +19,24 @@ fun Application.module() {
     }
 
     routing {
+        // Default page
+        get("/") {
+            call.respondText(
+                "<html><body><h1>Welcome to Barrace Trading Bot!</h1><p>Use <a href='/newTrade'>/newTrade</a> to get started</p></body></html>",
+                contentType = ContentType.Text.Html
+            )
+        }
+
+        // Monitor
+        get("/status") {
+            call.respondText("OK", ContentType.Text.Plain)
+        }
+
         // Serve the newTrade page
         get("/newTrade") {
             call.respondText(
                 this::class.java.classLoader.getResource("UserInput.html")!!.readText(),
-                contentType = io.ktor.http.ContentType.Text.Html
+                contentType = ContentType.Text.Html
             )
         }
 
@@ -34,9 +48,9 @@ fun Application.module() {
                 ?.replace("{{LOGS}}", logContent)
 
             if (logsHtml != null) {
-                call.respondText(logsHtml, contentType = io.ktor.http.ContentType.Text.Html)
+                call.respondText(logsHtml, contentType = ContentType.Text.Html)
             } else {
-                call.respondText("Error: TradeLogs.html not found.", contentType = io.ktor.http.ContentType.Text.Plain)
+                call.respondText("Error: TradeLogs.html not found.", contentType = ContentType.Text.Plain)
             }
         }
 
@@ -61,7 +75,7 @@ fun Application.module() {
                 }
             }
 
-            log("_______________NEW TRADE CREATED_______________")
+            log("\n\n\n_______________NEW TRADE CREATED_______________")
             log("Provider: $provider")
             log("Asset: $asset")
             log("Trade Length: $tradeLength")
