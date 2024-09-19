@@ -13,7 +13,7 @@ class TradingLogic {
             val candle = Candle(bitcoinPrice, bitcoinPrice, bitcoinPrice, bitcoinPrice, false)
 
             val haCandle = heikinAshiCalculator.calculateHeikinAshiCandle(candle)
-            log("Heikin-Ashi Candle - Open: ${haCandle.open}, High: ${haCandle.high}, Low: ${haCandle.low}, Close: ${haCandle.close}")
+            log("Heikin-Ashi Candle - Open: ${haCandle.open}, High: ${haCandle.high}, Low: ${haCandle.low}, Close: ${haCandle.close} | ${getCurrentDateTime()}")
 
             val buyingPower = Globals.buyingPower
             val sellingPower = Globals.sellingPower
@@ -43,38 +43,26 @@ class TradingLogic {
     }
 
     fun executeTradingLoop() {
-        var keepRunning = true
         val tradingLogic = TradingLogic()
 
-        while (keepRunning) {
-
+        while (isTrading) {
             tradingLogic.process()
 
-            // Run as often as user selected.
-            // Day Trade (Not recommended) = hr = 3600
-            // Less than a year = day = 86400
-            // Years (Safest) = week = 604800
+            // Run as often as user selected based on Globals.fireRate.
             for (i in 1..Globals.fireRate) {
-                if (System.`in`.available() > 0) {
-                    readlnOrNull()
-                    keepRunning = false
-                    break
+                if (!isTrading) {
+                    return // Exit the function
                 }
                 Thread.sleep(1000) // Sleep for 1 second
             }
         }
     }
 
-    private fun log(str : String) {
-        println(str)
-        LogManager.addLog(str)
-    }
-
     private fun executeBuy(price: Double, buyingPower: Double) {
         val buyAmountInBtc = buyingPower / price
-        log("\n \n BOUGHT $buyAmountInBtc at $price \n " +
-                "Total Portfolio Value: $buyingPower \n" +
-                "${getCurrentDateTime()} \n \n")
+        log("\n \n    BOUGHT $buyAmountInBtc at $price \n " +
+                "    Total Portfolio Value: $buyingPower \n" +
+                "    ${getCurrentDateTime()} \n \n")
 
         Globals.buyingPower -= buyingPower
         Globals.sellingPower += buyAmountInBtc
@@ -90,7 +78,7 @@ class TradingLogic {
     }
 
     private fun getCurrentDateTime(): String {
-        //in system's default timezone
+        // In system's default timezone
         val currentDateTime = LocalDateTime.now()
 
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")

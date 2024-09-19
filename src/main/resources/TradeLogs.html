@@ -34,31 +34,49 @@
             overflow-x: auto;
             max-height: 400px;
         }
+
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
 <div class="log-container">
     <h1>Log Messages</h1>
-    <pre id="log-content">Connecting to log server...</pre>
+    <pre id="log-content">{{LOGS}}</pre>
+    <button id="stop-trade-button">Stop Trade</button>
 </div>
 <script>
-    const logContent = document.getElementById('log-content');
     const socket = new WebSocket('ws://' + window.location.host + '/log-updates');
+    const stopTradeButton = document.getElementById('stop-trade-button');
 
     // Handle incoming messages from the WebSocket
     socket.onmessage = function(event) {
-        logContent.textContent = event.data;
+        const message = event.data;
+        if (message === 'redirect') {
+            // Redirect to the newTrade page
+            window.location.href = '/newTrade';
+        } else {
+            document.getElementById('log-content').textContent = message;
+        }
     };
 
-    // Handle WebSocket connection errors
-    socket.onerror = function(event) {
-        logContent.textContent = 'Error connecting to log server.';
-    };
+    // Send a "stop" command to the server when the button is clicked
+    stopTradeButton.addEventListener('click', function() {
+        socket.send('stop');
+    });
 
-    // Handle WebSocket connection close
-    socket.onclose = function(event) {
-        logContent.textContent += '\nConnection to log server closed.';
-    };
 </script>
 </body>
 </html>
