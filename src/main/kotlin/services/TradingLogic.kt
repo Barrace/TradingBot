@@ -21,8 +21,11 @@ class TradingLogic {
 
             // Execute trading logic every utils.Globals.fireRate seconds
             repeat(Globals.fireRate) {
-                if (!isTrading) return // Exit if trading is stopped
-                Thread.sleep(1000) // Sleep for 1 second
+                if (!isTrading) { // Exit if trading is stopped
+                    heikinAshiCalculator.resetForNewTrade()
+                    return
+                }
+                Thread.sleep(1000)
             }
         }
     }

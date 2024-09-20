@@ -7,6 +7,12 @@ class HeikinAshiCalculator {
     private var previousHaClose: Double = 0.0
     private var initialized: Boolean = false
 
+    fun resetForNewTrade() {
+        previousHaOpen = 0.0
+        previousHaClose = 0.0
+        initialized = false
+    }
+
     fun calculateHeikinAshiCandle(candle: Candle): Candle {
         val haClose = (candle.open + candle.high + candle.low + candle.close) / 4
 
