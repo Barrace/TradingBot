@@ -9,7 +9,6 @@ version = "1. 0-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    //maven("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
 }
 
 dependencies {
@@ -40,7 +39,7 @@ kotlin {
 }
 
 application {
-    mainClass.set("MainKt")
+    mainClass.set("app.MainKt")
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
