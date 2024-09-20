@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,7 +40,8 @@
             color: #555;
         }
 
-        select, input[type="number"] {
+        select,
+        input[type="number"] {
             width: 100%;
             padding: 10px;
             margin-top: 5px;
@@ -95,20 +97,21 @@
         }
     </style>
 </head>
+
 <body>
 <div class="form-container">
     <h1>Trading Bot Input</h1>
     <form action="/submit" method="post">
         <!-- Provider Dropdown -->
         <label for="provider">Provider:</label>
-        <select id="provider" name="provider">
+        <select id="provider" name="provider" required>
             <option value="Kraken">Kraken</option>
             <option value="Coinbase">Coinbase</option>
         </select>
 
         <!-- Asset Dropdown -->
         <label for="asset">Asset:</label>
-        <select id="asset" name="asset">
+        <select id="asset" name="asset" required>
             <option value="BTC">BTC</option>
         </select>
 
@@ -116,19 +119,19 @@
         <label>Trade Length:</label>
         <div class="radio-group">
             <div class="radio-item">
-                <input type="radio" id="test-fire-rate" name="tradeLength" value="TEST FIRE RATE (1min)">
+                <input type="radio" id="test-fire-rate" name="tradeLength" value="TEST FIRE RATE (1min)" required>
                 <label for="test-fire-rate">TEST FIRE RATE (1min)</label>
             </div>
             <div class="radio-item">
-                <input type="radio" id="day-trade" name="tradeLength" value="Day Trade (Not recommended)">
+                <input type="radio" id="day-trade" name="tradeLength" value="Day Trade (Not recommended)" required>
                 <label for="day-trade">Day Trade (Not recommended)</label>
             </div>
             <div class="radio-item">
-                <input type="radio" id="less-than-year" name="tradeLength" value="Less than a year">
+                <input type="radio" id="less-than-year" name="tradeLength" value="Less than a year" required>
                 <label for="less-than-year">Less than a year</label>
             </div>
             <div class="radio-item">
-                <input type="radio" id="years" name="tradeLength" value="Years (Safest)" checked>
+                <input type="radio" id="years" name="tradeLength" value="Years (Safest)" checked required>
                 <label for="years">Years (Safest)</label>
             </div>
         </div>
@@ -159,4 +162,5 @@
     });
 </script>
 </body>
+
 </html>

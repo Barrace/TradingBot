@@ -1,11 +1,12 @@
-data class Candle(val open: Double, val high: Double, val low: Double, val close: Double, val isGreen: Boolean)
+package services
+
+import models.Candle
 
 class HeikinAshiCalculator {
     private var previousHaOpen: Double = 0.0
     private var previousHaClose: Double = 0.0
-    private var initialized = false
+    private var initialized: Boolean = false
 
-    // Function to calculate Heikin-Ashi candle
     fun calculateHeikinAshiCandle(candle: Candle): Candle {
         val haClose = (candle.open + candle.high + candle.low + candle.close) / 4
 
@@ -21,7 +22,7 @@ class HeikinAshiCalculator {
 
         val isGreen = haClose > haOpen
 
-        // Store the current HA Open and Close for the next calculation
+        // Store previous HA Open and Close for the next calculation
         previousHaOpen = haOpen
         previousHaClose = haClose
 

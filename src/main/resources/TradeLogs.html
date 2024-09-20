@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -51,17 +52,20 @@
         }
     </style>
 </head>
+
 <body>
 <div class="log-container">
     <h1>Log Messages</h1>
     <pre id="log-content">{{LOGS}}</pre>
     <button id="stop-trade-button">Stop Trade</button>
 </div>
+
 <script>
+    // Establish WebSocket connection
     const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
     const socket = new WebSocket(protocol + window.location.host + '/log-updates');
 
-    // Handle incoming messages from the WebSocket
+    // Handle incoming messages from WebSocket
     socket.onmessage = function(event) {
         const message = event.data;
         if (message === 'redirect') {
@@ -72,12 +76,11 @@
         }
     };
 
-    // Send a "stop" command to the server when the button is clicked
-    const stopTradeButton = document.getElementById('stop-trade-button');
-    stopTradeButton.addEventListener('click', function() {
+    // Stop Trade button functionality
+    document.getElementById('stop-trade-button').addEventListener('click', function() {
         socket.send('stop');
     });
-
 </script>
 </body>
+
 </html>
