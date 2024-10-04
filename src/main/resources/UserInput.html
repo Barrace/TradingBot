@@ -5,10 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trading Bot Input</title>
+
+    <!-- React, ReactDOM, and Babel from CDN -->
+    <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
     <style>
-        /* Apply a modern, professional font */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             background-color: #f4f4f9;
             margin: 0;
             display: flex;
@@ -17,12 +22,11 @@
             height: 100vh;
         }
 
-        /* Style the form container */
         .form-container {
             background-color: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 500px;
         }
@@ -30,9 +34,10 @@
         h1 {
             text-align: center;
             color: #333;
+            font-size: 2rem;
+            margin-bottom: 20px;
         }
 
-        /* Style the labels and inputs */
         label {
             font-weight: bold;
             display: block;
@@ -40,8 +45,7 @@
             color: #555;
         }
 
-        select,
-        input[type="number"] {
+        select, input[type="number"] {
             width: 100%;
             padding: 10px;
             margin-top: 5px;
@@ -52,7 +56,6 @@
             box-sizing: border-box;
         }
 
-        /* Style the radio buttons group */
         .radio-group {
             display: flex;
             flex-direction: column;
@@ -65,12 +68,10 @@
             gap: 10px;
         }
 
-        /* Adjust spacing for the USD allocated field */
         .usd-allocated-container {
             margin-top: 30px;
         }
 
-        /* Style the small message */
         .small-message {
             color: red;
             font-style: italic;
@@ -78,15 +79,14 @@
             margin-top: -10px;
         }
 
-        /* Style the submit button */
         button {
             width: 100%;
             padding: 12px;
             background-color: #007bff;
             color: white;
+            font-size: 1rem;
             border: none;
             border-radius: 5px;
-            font-size: 16px;
             cursor: pointer;
             transition: background-color 0.3s;
             margin-top: 25px;
@@ -99,67 +99,106 @@
 </head>
 
 <body>
-<div class="form-container">
-    <h1>Trading Bot Input</h1>
-    <form action="/submit" method="post">
-        <!-- Provider Dropdown -->
-        <label for="provider">Provider:</label>
-        <select id="provider" name="provider" required>
-            <option value="Kraken">Kraken</option>
-            <option value="Coinbase">Coinbase</option>
-        </select>
+<!-- Root container where React component will be rendered -->
+<div id="user-input-root"></div>
 
-        <!-- Asset Dropdown -->
-        <label for="asset">Asset:</label>
-        <select id="asset" name="asset" required>
-            <option value="BTC">BTC</option>
-        </select>
+<script type="text/babel">
+    function UserInput() {
+        const [provider, setProvider] = React.useState('Kraken');
+        const [asset, setAsset] = React.useState('BTC');
+        const [tradeLength, setTradeLength] = React.useState('Years (Safest)');
+        const [usdAllocated, setUsdAllocated] = React.useState('');
+        const [errorMessage, setErrorMessage] = React.useState('');
 
-        <!-- Trade Length Radio Buttons -->
-        <label>Trade Length:</label>
-        <div class="radio-group">
-            <div class="radio-item">
-                <input type="radio" id="test-fire-rate" name="tradeLength" value="TEST FIRE RATE (1min)" required>
-                <label for="test-fire-rate">TEST FIRE RATE (1min)</label>
+        // Handle form submission with redirection to TradeLogs
+        const handleSubmit = async (event) => {
+            event.preventDefault();
+
+            if (usdAllocated < 10 || usdAllocated > 100000) {
+                setErrorMessage('USD allocated must be between $10 and $100,000.');
+                return;
+            }
+
+            setErrorMessage('');
+
+            // Construct form data
+            const formData = {
+                provider,
+                asset,
+                tradeLength,
+                usdAllocated,
+            };
+
+            try {
+                // Send the data to your server
+                const response = await fetch('/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(formData).toString(),
+                });
+
+                // Redirect to TradeLogs after submission
+                if (response.ok) {
+                    window.location.href = '/logs';
+                } else {
+                    alert('Failed to submit the form');
+                }
+            } catch (error) {
+                alert('Error submitting the form: ' + error);
+            }
+        };
+
+        return (
+            <div className="form-container">
+                <h1>Trading Bot Input</h1>
+                <form onSubmit={handleSubmit}>
+                    <label htmlFor="provider">Provider:</label>
+                    <select id="provider" value={provider} onChange={(e) => setProvider(e.target.value)} required>
+                        <option value="Kraken">Kraken</option>
+                        <option value="Coinbase">Coinbase</option>
+                    </select>
+
+                    <label htmlFor="asset">Asset:</label>
+                    <select id="asset" value={asset} onChange={(e) => setAsset(e.target.value)} required>
+                        <option value="BTC">BTC</option>
+                    </select>
+
+                    <label>Trade Length:</label>
+                    <div className="radio-group">
+                        <div className="radio-item">
+                            <input type="radio" id="test-fire-rate" name="tradeLength" value="TEST FIRE RATE (1min)" checked={tradeLength === "TEST FIRE RATE (1min)"} onChange={(e) => setTradeLength(e.target.value)} />
+                            <label htmlFor="test-fire-rate">TEST FIRE RATE (1min)</label>
+                        </div>
+                        <div className="radio-item">
+                            <input type="radio" id="day-trade" name="tradeLength" value="Day Trade (Not recommended)" checked={tradeLength === "Day Trade (Not recommended)"} onChange={(e) => setTradeLength(e.target.value)} />
+                            <label htmlFor="day-trade">Day Trade (Not recommended)</label>
+                        </div>
+                        <div className="radio-item">
+                            <input type="radio" id="less-than-year" name="tradeLength" value="Less than a year" checked={tradeLength === "Less than a year"} onChange={(e) => setTradeLength(e.target.value)} />
+                            <label htmlFor="less-than-year">Less than a year</label>
+                        </div>
+                        <div className="radio-item">
+                            <input type="radio" id="years" name="tradeLength" value="Years (Safest)" checked={tradeLength === "Years (Safest)"} onChange={(e) => setTradeLength(e.target.value)} />
+                            <label htmlFor="years">Years (Safest)</label>
+                        </div>
+                    </div>
+
+                    <div className="usd-allocated-container">
+                        <label htmlFor="usdAllocated">USD allocated to TradingBot:</label>
+                        <input type="number" id="usdAllocated" value={usdAllocated} onChange={(e) => setUsdAllocated(e.target.value)} min="10" max="100000" required />
+                        {errorMessage && <small className="small-message">{errorMessage}</small>}
+                    </div>
+
+                    <button type="submit">Submit</button>
+                </form>
             </div>
-            <div class="radio-item">
-                <input type="radio" id="day-trade" name="tradeLength" value="Day Trade (Not recommended)" required>
-                <label for="day-trade">Day Trade (Not recommended)</label>
-            </div>
-            <div class="radio-item">
-                <input type="radio" id="less-than-year" name="tradeLength" value="Less than a year" required>
-                <label for="less-than-year">Less than a year</label>
-            </div>
-            <div class="radio-item">
-                <input type="radio" id="years" name="tradeLength" value="Years (Safest)" checked required>
-                <label for="years">Years (Safest)</label>
-            </div>
-        </div>
+        );
+    }
 
-        <!-- USD Allocated Field -->
-        <div class="usd-allocated-container">
-            <label for="usdAllocated">USD allocated to TradingBot:</label>
-            <input type="number" id="usdAllocated" name="usdAllocated" min="10" max="100000" required>
-            <small class="small-message">Must have at least this amount available in account.</small>
-        </div>
-
-        <!-- Submit Button -->
-        <button type="submit">Submit</button>
-    </form>
-</div>
-
-<script>
-    // Add validation messages for the USD allocated field
-    const usdAllocatedInput = document.getElementById('usdAllocated');
-    usdAllocatedInput.addEventListener('input', function () {
-        if (usdAllocatedInput.validity.rangeUnderflow) {
-            usdAllocatedInput.setCustomValidity('The minimum amount is $10.');
-        } else if (usdAllocatedInput.validity.rangeOverflow) {
-            usdAllocatedInput.setCustomValidity('The maximum amount is $100,000.');
-        } else {
-            usdAllocatedInput.setCustomValidity('');
-        }
-    });
+    // Render the UserInput component into the root div
+    ReactDOM.render(<UserInput />, document.getElementById('user-input-root'));
 </script>
 </body>
 
