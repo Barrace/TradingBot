@@ -75,7 +75,8 @@
 <script type="text/babel">
     function TradeLogs() {
         const [logs, setLogs] = React.useState('');
-        const socketRef = React.useRef(null);
+        const logsContainerRef = React.useRef(null); // Reference to the logs container
+        const socketRef = React.useRef(null); // Reference to the WebSocket
 
         // Set up WebSocket connection using useEffect
         React.useEffect(() => {
@@ -96,6 +97,13 @@
             return () => socket.close();
         }, []);
 
+        // Scroll to the bottom of the logs when new logs are added
+        React.useEffect(() => {
+            if (logsContainerRef.current) {
+                logsContainerRef.current.scrollTop = logsContainerRef.current.scrollHeight;
+            }
+        }, [logs]);
+
         // Function to handle stop trade button click
         const handleStopTrade = () => {
             if (socketRef.current) {
@@ -106,7 +114,7 @@
         return (
             <div className="log-container">
                 <h1>Trade Logs</h1>
-                <pre>{logs}</pre>
+                <pre ref={logsContainerRef}>{logs}</pre>
                 <button onClick={handleStopTrade}>Stop Trade</button>
             </div>
         );
